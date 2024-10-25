@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText userIdInput, userPwInput;
     private Button loginButton;
     private TextView signUpButton;
+    private DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,25 +28,36 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         signUpButton = findViewById(R.id.signUp_button);
 
+        dbHelper = new DBHelper(this); // DBHelper 인스턴스 생성
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userId = userIdInput.getText().toString();
-                String userPw = userPwInput.getText().toString();
+                String userId = userIdInput.getText().toString().trim();
+                String userPw = userPwInput.getText().toString().trim();
 
-                // 로그인 확인 로직 추가 (예: DB에서 확인)
+                // 입력 검증
+                if (userId.isEmpty() || userPw.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "아이디와 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                // 로그인 성공 시 SharedPreferences에 정보 저장
-                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("isLoggedIn", true); // 로그인 상태
-                editor.putString("userId", userId); // 사용자 ID 저장
-                editor.apply();
+                // 로그인 확인
+                if (dbHelper.checkUser(userId, userPw)) {
+                    // 로그인 성공 시 SharedPreferences에 정보 저장
+                    SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("isLoggedIn", true); // 로그인 상태
+                    editor.putString("userId", userId); // 사용자 ID 저장
+                    editor.apply();
 
-                // MainActivity로 돌아가기
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish(); // 현재 로그인 액티비티 종료
+                    // MainActivity로 이동
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish(); // 현재 로그인 액티비티 종료
+                } else {
+                    Toast.makeText(LoginActivity.this, "아이디 또는 비밀번호가 틀립니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -56,5 +69,12 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 뒤로가기 버튼 처리
+        super.onBackPressed();
+        finish(); // 현재 Activity 종료
     }
 }

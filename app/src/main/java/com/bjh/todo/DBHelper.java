@@ -1,90 +1,109 @@
-    package com.bjh.todo;
+package com.bjh.todo;
 
-    import android.content.ContentValues;
-    import android.content.Context;
-    import android.database.Cursor;
-    import android.database.sqlite.SQLiteDatabase;
-    import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-    import java.security.MessageDigest;
-    import java.security.NoSuchAlgorithmException;
+public class DBHelper extends SQLiteOpenHelper {
 
-    public class DBHelper extends SQLiteOpenHelper {
+    private static final String DATABASE_NAME = "todo_db";  // 데이터베이스 이름
+    private static final int DATABASE_VERSION = 1;           // 데이터베이스 버전
+    private static final String TABLE_USERS = "users";       // 사용자 테이블 이름
+    private static final String TABLE_SCHEDULES = "schedules"; // 일정 테이블 이름
 
-        private static final String DATABASE_NAME = "users_db";
-        private static final int DATABASE_VERSION = 1;
-        private static final String TABLE_USERS = "users";
+    // 사용자 테이블 컬럼
+    private static final String COLUMN_USER_NO = "user_no";
+    private static final String COLUMN_USER_ID = "user_id";
+    private static final String COLUMN_USER_PW = "user_pw";
 
-        // 사용자 테이블 컬럼
-        private static final String COLUMN_USER_NO = "user_no";
-        private static final String COLUMN_USER_ID = "user_id";
-        private static final String COLUMN_USER_PW = "user_pw";
+    // 일정 테이블 컬럼
+    private static final String COLUMN_SCHEDULE_ID = "schedule_id";
+    private static final String COLUMN_SCHEDULE_DATE = "schedule_date";
+    private static final String COLUMN_SCHEDULE_TEXT = "schedule_text";
+    private static final String COLUMN_USER_NO_FK = "user_no_fk"; // 사용자 번호 외래 키
 
-        public DBHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
+    public DBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            String createUsersTable = "CREATE TABLE " + TABLE_USERS + " ("
-                    + COLUMN_USER_NO + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_USER_ID + " TEXT, "
-                    + COLUMN_USER_PW + " TEXT)";
-            db.execSQL(createUsersTable);
-        }
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // 사용자 테이블 생성 SQL
+        String createUsersTable = "CREATE TABLE " + TABLE_USERS + " (" +
+                COLUMN_USER_NO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_USER_ID + " TEXT UNIQUE, " +
+                COLUMN_USER_PW + " TEXT)";
+        db.execSQL(createUsersTable);
 
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-            onCreate(db);
-        }
+        // 일정 테이블 생성 SQL
+        String createSchedulesTable = "CREATE TABLE " + TABLE_SCHEDULES + " (" +
+                COLUMN_SCHEDULE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_SCHEDULE_DATE + " TEXT, " +
+                COLUMN_SCHEDULE_TEXT + " TEXT, " +
+                COLUMN_USER_NO_FK + " INTEGER, " + // 사용자 번호 외래 키
+                "FOREIGN KEY (" + COLUMN_USER_NO_FK + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_NO + "))";
+        db.execSQL(createSchedulesTable);
+    }
 
-        // 비밀번호 해시 함수 (SHA-256)
-        private String hsahPassword(String userPw) {
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hash = digest.digest(userPw.getBytes());
-                StringBuilder hexString = new StringBuilder();
-                for (byte b : hash) {
-                    String hex = Integer.toHexString(0xff & b);
-                    if(hex.length() == 1) hexString.append('0');
-                    hexString.append(hex);
-                }
-                return hexString.toString();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-                return null;
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULES);
+        onCreate(db);
+    }
+
+    // 비밀번호 해시화 메서드 (SHA-256)
+    private String hashPassword(String userPw) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(userPw.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0'); // 0-padding
+                hexString.append(hex);
             }
-        }
-        // 사용자 등록 기능
-        public void insertUser(String userId, String userPw) {
-            SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_USER_ID, userId);
-            values.put(COLUMN_USER_PW, hsahPassword(userPw));  // 비밀번호 해시화
-            db.insert(TABLE_USERS, null, values);
-            db.close();
-        }
-        // 로그인 기능 구현
-        public boolean checkUser(String userId, String userPw) {
-            SQLiteDatabase db = this.getReadableDatabase();
-            String hashedPw = hsahPassword(userPw);  // 입력받은 비밀번호 해시화
-            String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_ID + " = ? AND " + COLUMN_USER_PW + " = ?";
-            Cursor cursor = db.rawQuery(query, new String[]{userId, hashedPw});
-            boolean exists = (cursor.getCount() > 0);
-            cursor.close();
-            db.close();
-            return exists;
-        }
-
-        // 아이디 중복 확인 메소드
-        public boolean isUserExists(String userId) {
-            SQLiteDatabase db = this.getReadableDatabase();
-            String query = "SELECT * FROM " + TABLE_USERS + " WHERE user_id = ?";
-            Cursor cursor = db.rawQuery(query, new String[]{userId});
-            boolean exists = (cursor.getCount() > 0);
-            cursor.close();
-            db.close();
-            return exists;
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null; // 해시 생성 실패 시 null 반환
         }
     }
+
+    // 사용자 등록 메서드
+    public void insertUser(UserDTO user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_ID, user.getUserId());
+        values.put(COLUMN_USER_PW, hashPassword(user.getUserPw())); // 비밀번호 해시화
+        db.insert(TABLE_USERS, null, values);
+        db.close();
+    }
+
+    // 사용자 로그인 체크 메서드
+    public boolean checkUser(String userId, String userPw) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String hashedPw = hashPassword(userPw);
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_ID + " = ? AND " + COLUMN_USER_PW + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{userId, hashedPw});
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
+    // 사용자 ID 중복 확인 메서드
+    public boolean isUserExists(String userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        db.close();
+        return exists;
+    }
+}
