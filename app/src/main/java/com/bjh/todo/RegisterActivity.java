@@ -13,7 +13,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText userIdInput, userPwInput;
     private Button register;
-    private DBHelper dbHelper;
+    private UserDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
         userIdInput = findViewById(R.id.userId);
         userPwInput = findViewById(R.id.userPw);
         register = findViewById(R.id.register);
-        dbHelper = new DBHelper(this);
+        dbHelper = new UserDBHelper(this);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override

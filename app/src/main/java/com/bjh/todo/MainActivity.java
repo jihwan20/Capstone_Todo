@@ -3,7 +3,7 @@ package com.bjh.todo;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log; // Log 추가
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,13 +31,6 @@ public class MainActivity extends AppCompatActivity {
         notifications = findViewById(R.id.notifications);
         logout = findViewById(R.id.logout_button);
 
-        // 앱이 처음 실행될 때 초기화
-        if (sharedPreferences.getAll().isEmpty()) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isLoggedIn", false);
-            editor.apply();
-        }
-
         // 로그인 상태 체크
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
         Log.d(TAG, "isLoggedIn: " + isLoggedIn); // 로그인 상태 출력
@@ -49,17 +42,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             loginInfo.setText("로그인 해주세요");
             weeklyScheduleText.setText("로그인 해주세요");
-
-            // 로그인 페이지로 이동하는 클릭 이벤트
-            View.OnClickListener loginClickListener = v -> {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            };
-
-            // login_info 클릭 이벤트
-            loginInfo.setOnClickListener(loginClickListener);
-            // weekly_schedule_text 클릭 이벤트
-            weeklyScheduleText.setOnClickListener(loginClickListener);
         }
 
         // 로그아웃 이벤트 처리
@@ -77,19 +59,55 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 오늘 일정 클릭 시
-        todaySchedule.setOnClickListener(v -> {
-            // 오늘 일정 동작
+        /*todaySchedule.setOnClickListener(v -> {
+            /if (isLoggedIn) {
+                // 오늘 일정 Activity로 이동
+                Intent intent = new Intent(MainActivity.this, TodayScheduleActivity.class);
+                startActivity(intent);
+            } else {
+                promptLogin();
+            }
         });
-
+        */
         // 캘린더 클릭 시
         calendar.setOnClickListener(v -> {
-            //Intent intent = new Intent(MainActivity.this, .class);
-            //startActivity(intent);
+            if (isLoggedIn) {
+                Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                startActivity(intent);
+            } else {
+                promptLogin();
+            }
         });
 
         // 알림 클릭 시
         notifications.setOnClickListener(v -> {
-            // 알림 동작
+            if (isLoggedIn) {
+                // 알림 Activity로 이동 (구현 필요)
+            } else {
+                promptLogin();
+            }
         });
+
+        // 로그인 페이지로 이동하는 클릭 이벤트
+        loginInfo.setOnClickListener(v -> {
+            if (!isLoggedIn) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // weekly_schedule_text 클릭 이벤트
+        weeklyScheduleText.setOnClickListener(v -> {
+            if (!isLoggedIn) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    // 로그인 프롬프트 메서드
+    private void promptLogin() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

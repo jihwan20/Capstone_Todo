@@ -8,25 +8,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class DBHelper extends SQLiteOpenHelper {
+public class UserDBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "todo_db";  // 데이터베이스 이름
+    private static final String DATABASE_NAME = "user_db";  // 데이터베이스 이름
     private static final int DATABASE_VERSION = 1;           // 데이터베이스 버전
-    private static final String TABLE_USERS = "users";       // 사용자 테이블 이름
-    private static final String TABLE_SCHEDULES = "schedules"; // 일정 테이블 이름
+    public static final String TABLE_USERS = "users";       // 사용자 테이블 이름
 
     // 사용자 테이블 컬럼
-    private static final String COLUMN_USER_NO = "user_no";
-    private static final String COLUMN_USER_ID = "user_id";
-    private static final String COLUMN_USER_PW = "user_pw";
+    public static final String COLUMN_USER_NO = "user_no";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_USER_PW = "user_pw";
 
-    // 일정 테이블 컬럼
-    private static final String COLUMN_SCHEDULE_ID = "schedule_id";
-    private static final String COLUMN_SCHEDULE_DATE = "schedule_date";
-    private static final String COLUMN_SCHEDULE_TEXT = "schedule_text";
-    private static final String COLUMN_USER_NO_FK = "user_no_fk"; // 사용자 번호 외래 키
-
-    public DBHelper(Context context) {
+    public UserDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -38,21 +31,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 COLUMN_USER_ID + " TEXT UNIQUE, " +
                 COLUMN_USER_PW + " TEXT)";
         db.execSQL(createUsersTable);
-
-        // 일정 테이블 생성 SQL
-        String createSchedulesTable = "CREATE TABLE " + TABLE_SCHEDULES + " (" +
-                COLUMN_SCHEDULE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_SCHEDULE_DATE + " TEXT, " +
-                COLUMN_SCHEDULE_TEXT + " TEXT, " +
-                COLUMN_USER_NO_FK + " INTEGER, " + // 사용자 번호 외래 키
-                "FOREIGN KEY (" + COLUMN_USER_NO_FK + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_NO + "))";
-        db.execSQL(createSchedulesTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCHEDULES);
         onCreate(db);
     }
 
@@ -105,5 +88,20 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return exists;
+    }
+
+    // 현재 로그인한 사용자의 외래키를 가져오는 메서드
+    public int getLoggedInUserNo(String userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int userNo = -1;
+        String query = "SELECT " + COLUMN_USER_NO + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{userId});
+
+        if (cursor.moveToFirst()) {
+            userNo = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return userNo;
     }
 }
