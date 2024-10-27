@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Todo</string>
+    <!-- 기존 문자열들 -->
+    <string name="app_name">Todo App</string>
+    <string name="back">뒤로가기</string> <!-- 추가된 문자열 -->
+    <!-- 다른 문자열들 -->
 </resources>

@@ -58,22 +58,21 @@
         android:background="#FFFFFF"
         android:padding="16dp">
 
-        <!-- 둥근 모서리 모형 -->
         <LinearLayout
             android:id="@+id/rounded_corner_weekly_schedule"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/rounded_corner"
             android:padding="16dp"
-            android:gravity="center">
+            android:gravity="center"> <!-- 부모 레이아웃에만 정렬 설정 -->
 
             <TextView
                 android:id="@+id/weekly_schedule_text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주간 일정"
                 android:textSize="18sp"
-                android:textColor="#000" />
+                android:textColor="#000" /> <!-- gravity 속성 제거 -->
         </LinearLayout>
     </LinearLayout>
 

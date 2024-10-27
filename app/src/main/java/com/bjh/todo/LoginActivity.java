@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // UI 및 이벤트 설정 코드...
+        // UI 및 이벤트 설정
         userIdInput = findViewById(R.id.user_id);
         userPwInput = findViewById(R.id.user_pw);
         loginButton = findViewById(R.id.login_button);
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (dbuHelper.checkUser(userId, userPw)) {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putBoolean("isLoggedIn", true);
-                    editor.putString("userId", userId);
+                    editor.putString("userId", userId); // 사용자 ID 저장
                     editor.apply();
 
                     // MainActivity로 이동
@@ -75,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
     }

@@ -42,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     // 중복되지 않으면 회원가입 진행
-                    UserDTO newUser = new UserDTO(0, user, pass); // User 객체 생성
+                    UserDTO newUser = new UserDTO(user, pass); // User 객체 생성
                     dbHelper.insertUser(newUser); // User 객체를 전달
                     Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
 

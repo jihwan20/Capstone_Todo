@@ -1,24 +1,16 @@
 package com.bjh.todo;
 
 public class UserDTO {
-    private int userNo;
-    private String userId;
-    private String userPw;
+    private String userId;  // 사용자 ID
+    private String userPw;  // 사용자 비밀번호
 
-    public UserDTO(int userNo, String userId, String userPw) {
-        this.userNo = userNo;
+    // 생성자
+    public UserDTO(String userId, String userPw) {
         this.userId = userId;
         this.userPw = userPw;
     }
+
     // Getter와 Setter
-    public int getUserNo() {
-        return userNo;
-    }
-
-    public void setUserNo(int userNo) {
-        this.userNo = userNo;
-    }
-
     public String getUserId() {
         return userId;
     }
@@ -35,4 +27,3 @@ public class UserDTO {
         this.userPw = userPw;
     }
 }
-

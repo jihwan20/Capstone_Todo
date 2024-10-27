@@ -1,12 +1,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#212121"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Todo"
+            android:textColor="#FFF"
+            android:textSize="20sp" />
+
+        <!-- 설정 버튼 추가 -->
+        <Button
+            android:id="@+id/settings_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:text="설정"
+            android:textColor="#FFF" />
+    </androidx.appcompat.widget.Toolbar>
 
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:dateTextAppearance="@style/CalendarDateTextStyle"
+        android:weekDayTextAppearance="@style/CalendarWeekDayTextStyle"
+        android:layout_gravity="center"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/extra_block"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F0F0F0"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="start">
+
+            <TextView
+                android:id="@+id/extra_block_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/scheduleListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:src="@android:drawable/ic_input_add"/>
+    </RelativeLayout>
 </LinearLayout>

@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_header" />
+
+    <TextView
+        android:id="@+id/scheduleDateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/timeTickerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textColor="#FF0000" />
+
+    <EditText
+        android:id="@+id/scheduleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="일정 텍스트" />
+
+    <EditText
+        android:id="@+id/locationTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="위치" />
+
+    <TimePicker
+        android:id="@+id/timePickerStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"
+        android:layout_marginBottom="16dp"/>
+
+    <TimePicker
+        android:id="@+id/timePickerEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"
+        android:layout_marginBottom="16dp"/>
+
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수정" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="삭제"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

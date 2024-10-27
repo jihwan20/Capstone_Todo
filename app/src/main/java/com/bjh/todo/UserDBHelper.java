@@ -15,9 +15,8 @@ public class UserDBHelper extends SQLiteOpenHelper {
     public static final String TABLE_USERS = "users";       // 사용자 테이블 이름
 
     // 사용자 테이블 컬럼
-    public static final String COLUMN_USER_NO = "user_no";
-    public static final String COLUMN_USER_ID = "user_id";
-    public static final String COLUMN_USER_PW = "user_pw";
+    public static final String COLUMN_USER_ID = "user_id"; // 사용자 ID (기본 키)
+    public static final String COLUMN_USER_PW = "user_pw"; // 사용자 비밀번호
 
     public UserDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,8 +26,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // 사용자 테이블 생성 SQL
         String createUsersTable = "CREATE TABLE " + TABLE_USERS + " (" +
-                COLUMN_USER_NO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_USER_ID + " TEXT UNIQUE, " +
+                COLUMN_USER_ID + " TEXT PRIMARY KEY, " + // 기본 키로 설정
                 COLUMN_USER_PW + " TEXT)";
         db.execSQL(createUsersTable);
     }
@@ -88,20 +86,5 @@ public class UserDBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return exists;
-    }
-
-    // 현재 로그인한 사용자의 외래키를 가져오는 메서드
-    public int getLoggedInUserNo(String userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        int userNo = -1;
-        String query = "SELECT " + COLUMN_USER_NO + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_ID + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{userId});
-
-        if (cursor.moveToFirst()) {
-            userNo = cursor.getInt(0);
-        }
-        cursor.close();
-        db.close();
-        return userNo;
     }
 }

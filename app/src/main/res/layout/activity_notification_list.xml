@@ -4,11 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_header" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/scheduleListRecyclerView"
+    <ListView
+        android:id="@+id/notification_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="match_parent" />
 </LinearLayout>
