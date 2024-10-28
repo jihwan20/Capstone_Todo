@@ -22,6 +22,7 @@ public class ScheduleDetailActivity extends AppCompatActivity {
 
     private EditText scheduleTextView, locationTextView;
     private TimePicker timePickerStart, timePickerEnd;
+    private TextView selectedDateTextView;
     private TextView textViewStartTime, textViewEndTime; // TimePicker 대신 사용할 TextView 추가
     private Button btnEdit, btnDelete;
     private ScheduleDBHelper scheduleDBHelper;
@@ -36,6 +37,7 @@ public class ScheduleDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_detail);
 
         initializeViews();
+        setupDateTextView();
 
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         scheduleDBHelper = new ScheduleDBHelper(this);
@@ -58,6 +60,7 @@ public class ScheduleDetailActivity extends AppCompatActivity {
         // TimePicker 대신 사용할 TextView
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
+        selectedDateTextView = findViewById(R.id.selectedDateTextView);
 
         btnEdit = findViewById(R.id.btnEdit);
         btnDelete = findViewById(R.id.btnDelete);
@@ -98,6 +101,12 @@ public class ScheduleDetailActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    // 선택된 날짜 텍스트뷰 설정 메서드
+    private void setupDateTextView() {
+        String selectedDate = getIntent().getStringExtra("selectedDate");
+        selectedDateTextView.setText(String.format("날짜: %s", selectedDate)); // 날짜 표시
     }
 
     @Override
