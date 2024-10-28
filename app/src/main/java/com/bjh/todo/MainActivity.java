@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar); // 레이아웃 설정
 
+        // 알림 채널 생성
+        NotificationHelper.createNotificationChannel(this);
+
         // 권한 요청
         requestNotificationPermission();
 
@@ -57,6 +61,16 @@ public class MainActivity extends AppCompatActivity {
         if (!isLoggedIn) {
             extraBlockText.setText("로그인 해주세요."); // 로그인 필요 메시지
         }
+
+        // 오늘 날짜 가져오기
+        Calendar calendar = Calendar.getInstance();
+        int cYear = calendar.get(Calendar.YEAR);
+        int cMonth = calendar.get(Calendar.MONTH);
+        int cDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 오늘 날짜를 CalendarView에 설정
+        calendarView.setDate(calendar.getTimeInMillis(), true, true);
+        selectedDate = String.format("%04d-%02d-%02d", cYear, cMonth + 1, cDayOfMonth);
 
         // 설정 버튼 클릭 리스너 추가
         settingsButton.setOnClickListener(view -> {
@@ -117,10 +131,8 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 권한이 부여됨
                 Toast.makeText(this, "알림 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
-                // 권한이 거부됨
                 Toast.makeText(this, "알림 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -155,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 scheduleList.append(schedule.getStartTime()).append(" ~ ")
                         .append(schedule.getEndTime()).append(" : ")
                         .append(schedule.getScheduleText()).append(" \n");
+                // 알람 설정 추가
+                AlarmHelper.setAlarm(this, schedule);
             }
             extraBlockText.setText(scheduleList.toString());
             extraBlockText.setGravity(Gravity.START);

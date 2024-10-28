@@ -127,15 +127,16 @@ public class AddScheduleActivity extends AppCompatActivity {
         String location = editTextLocation.getText().toString();
         String date = getIntent().getStringExtra("selectedDate");
 
-        // 사용자가 선택한 시작 및 종료 시간을 가져옴
         String startTime = textViewStartTime.getText().toString();
         String endTime = textViewEndTime.getText().toString();
 
-        // 일정 DTO 생성 및 데이터베이스에 저장
         ScheduleDTO schedule = new ScheduleDTO(0, date, title, loggedInUserId, startTime, endTime, location);
         scheduleDBHelper.insertSchedule(schedule);
 
-        Toast.makeText(this, "일정이 저장되었습니다.", Toast.LENGTH_SHORT).show(); // 저장 완료 메시지 표시
-        finish(); // Activity 종료
+        // 알람 설정
+        AlarmHelper.setAlarm(this, schedule);
+
+        Toast.makeText(this, "일정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }
