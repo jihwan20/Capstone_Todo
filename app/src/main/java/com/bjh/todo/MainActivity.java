@@ -40,12 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calendar); // 레이아웃 설정
 
         // 권한 요청
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-            }
-        }
+        requestNotificationPermission();
 
         // 뷰 초기화
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
@@ -108,6 +103,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 알림 권한 요청 메서드
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 권한이 부여됨
+                Toast.makeText(this, "알림 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                // 권한이 거부됨
+                Toast.makeText(this, "알림 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -136,8 +154,7 @@ public class MainActivity extends AppCompatActivity {
             for (ScheduleDTO schedule : schedules) {
                 scheduleList.append(schedule.getStartTime()).append(" ~ ")
                         .append(schedule.getEndTime()).append(" : ")
-                        .append(schedule.getScheduleText()).append(" (")
-                        .append(schedule.getLocation()).append(")\n");
+                        .append(schedule.getScheduleText()).append(" \n");
             }
             extraBlockText.setText(scheduleList.toString());
             extraBlockText.setGravity(Gravity.START);

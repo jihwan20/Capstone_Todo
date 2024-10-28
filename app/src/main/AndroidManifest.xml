@@ -5,7 +5,12 @@
     <!-- 필요한 권한 추가 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 위치 권한 추가 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 추가된 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 인터넷 권한 추가 -->
 
     <application
         android:allowBackup="true"
@@ -17,6 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Todo"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD97ppppHKGHtTDRt1Qz2UJ52-sFX5GgX8" />
+        <activity android:name=".MapActivity"/>
         <activity android:name=".SettingsActivity"/>
         <activity android:name=".ScheduleDetailActivity"/>
         <activity android:name=".AddScheduleActivity"/>
@@ -28,7 +38,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

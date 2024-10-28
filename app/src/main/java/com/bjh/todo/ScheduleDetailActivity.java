@@ -1,11 +1,16 @@
 package com.bjh.todo;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,12 +18,17 @@ import androidx.appcompat.widget.Toolbar;
 
 public class ScheduleDetailActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE_MAP = 1;
+
     private EditText scheduleTextView, locationTextView;
-    private TimePicker timePickerStart, timePickerEnd; // TimePicker 추가
+    private TimePicker timePickerStart, timePickerEnd;
+    private TextView textViewStartTime, textViewEndTime; // TimePicker 대신 사용할 TextView 추가
     private Button btnEdit, btnDelete;
     private ScheduleDBHelper scheduleDBHelper;
     private SharedPreferences sharedPreferences;
     private int scheduleId;
+    private boolean isStartPickerVisible = false;
+    private boolean isEndPickerVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +51,14 @@ public class ScheduleDetailActivity extends AppCompatActivity {
 
     private void initializeViews() {
         scheduleTextView = findViewById(R.id.scheduleTextView);
-        locationTextView = findViewById(R.id.locationTextView);
+        locationTextView = findViewById(R.id.editTextLocation);
         timePickerStart = findViewById(R.id.timePickerStart);
         timePickerEnd = findViewById(R.id.timePickerEnd);
+
+        // TimePicker 대신 사용할 TextView
+        textViewStartTime = findViewById(R.id.textViewStartTime);
+        textViewEndTime = findViewById(R.id.textViewEndTime);
+
         btnEdit = findViewById(R.id.btnEdit);
         btnDelete = findViewById(R.id.btnDelete);
 
@@ -57,6 +72,32 @@ public class ScheduleDetailActivity extends AppCompatActivity {
 
         // 툴바 제목 없애기
         getSupportActionBar().setTitle(""); // 빈 문자열로 제목 제거
+
+        findViewById(R.id.btnFindAddress).setOnClickListener(view -> {
+            Intent intent = new Intent(ScheduleDetailActivity.this, MapActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_MAP);
+        });
+
+        // 시간 텍스트뷰 클릭 리스너 추가
+        textViewStartTime.setOnClickListener(view -> {
+            isStartPickerVisible = !isStartPickerVisible;
+            timePickerStart.setVisibility(isStartPickerVisible ? View.VISIBLE : View.GONE);
+            if (isStartPickerVisible) {
+                timePickerStart.setOnTimeChangedListener((view1, hourOfDay, minute) -> {
+                    textViewStartTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+                });
+            }
+        });
+
+        textViewEndTime.setOnClickListener(view -> {
+            isEndPickerVisible = !isEndPickerVisible;
+            timePickerEnd.setVisibility(isEndPickerVisible ? View.VISIBLE : View.GONE);
+            if (isEndPickerVisible) {
+                timePickerEnd.setOnTimeChangedListener((view12, hourOfDay, minute) -> {
+                    textViewEndTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+                });
+            }
+        });
     }
 
     @Override
@@ -76,9 +117,13 @@ public class ScheduleDetailActivity extends AppCompatActivity {
             String[] startTimeParts = schedule.getStartTime().split(":");
             timePickerStart.setHour(Integer.parseInt(startTimeParts[0]));
             timePickerStart.setMinute(Integer.parseInt(startTimeParts[1]));
+            textViewStartTime.setText(schedule.getStartTime()); // 시간 텍스트 설정
+
             String[] endTimeParts = schedule.getEndTime().split(":");
             timePickerEnd.setHour(Integer.parseInt(endTimeParts[0]));
             timePickerEnd.setMinute(Integer.parseInt(endTimeParts[1]));
+            textViewEndTime.setText(schedule.getEndTime()); // 시간 텍스트 설정
+
             locationTextView.setText(schedule.getLocation());
         }
     }
@@ -118,5 +163,19 @@ public class ScheduleDetailActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("취소", null)
                 .show();
+    }
+
+    // 선택된 주소를 받는 메서드
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_MAP && resultCode == RESULT_OK) {
+            if (data != null) {
+                String selectedAddress = data.getStringExtra("selectedAddress");
+                if (selectedAddress != null) {
+                    locationTextView.setText(selectedAddress);
+                }
+            }
+        }
     }
 }

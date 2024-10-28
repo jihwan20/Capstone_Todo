@@ -1,68 +1,115 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:padding="16dp">
 
-    <include layout="@layout/toolbar_header" />
-
-    <TextView
-        android:id="@+id/scheduleDateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/timeTickerTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textColor="#FF0000" />
-
-    <EditText
-        android:id="@+id/scheduleTextView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="일정 텍스트" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/locationTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="위치" />
+        <include layout="@layout/toolbar_header" />
 
-    <TimePicker
-        android:id="@+id/timePickerStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
-        android:layout_marginBottom="16dp"/>
-
-    <TimePicker
-        android:id="@+id/timePickerEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
-        android:layout_marginBottom="16dp"/>
-
-<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginTop="16dp">
-
-        <Button
-            android:id="@+id/btnEdit"
+        <TextView
+            android:id="@+id/selectedDateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="수정" />
+            android:textSize="18sp"
+            android:padding="16dp" />
 
-        <Button
-            android:id="@+id/btnDelete"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="삭제"
-            android:layout_marginStart="8dp" />
+            android:text="일정 제목" />
+        <EditText
+            android:id="@+id/scheduleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="일정 제목 입력" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="위치" />
+        <EditText
+            android:id="@+id/editTextLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="위치 선택" />
+
+        <Button
+            android:id="@+id/btnFindAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="주소 찾기"
+            android:layout_gravity="end" /> <!-- 오른쪽 정렬 -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="시작 시간" />
+
+        <TextView
+            android:id="@+id/textViewStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="시간 선택" />
+
+        <TimePicker
+            android:id="@+id/timePickerStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="종료 시간" />
+
+        <TextView
+            android:id="@+id/textViewEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="시간 선택" />
+
+        <TimePicker
+            android:id="@+id/timePickerEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수정" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="삭제"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

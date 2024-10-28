@@ -134,4 +134,30 @@ public class ScheduleDBHelper extends SQLiteOpenHelper {
         db.update(TABLE_SCHEDULES, values, COLUMN_SCHEDULE_ID + " = ?", new String[]{String.valueOf(schedule.getScheduleId())});
         db.close();
     }
+
+    // 모든 일정 가져오기 메서드
+    public List<ScheduleDTO> getAllSchedules(String userId) {
+        List<ScheduleDTO> scheduleList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SCHEDULES +
+                " WHERE " + COLUMN_USER_ID_FK + " = ?", new String[]{userId});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SCHEDULE_ID));
+                String scheduleDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SCHEDULE_DATE));
+                String scheduleText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SCHEDULE_TEXT));
+                String userIdFk = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_ID_FK));
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                String endTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_END_TIME));
+                String location = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION));
+
+                scheduleList.add(new ScheduleDTO(id, scheduleDate, scheduleText, userIdFk, startTime, endTime, location));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return scheduleList;
+    }
 }
