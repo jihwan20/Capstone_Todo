@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,27 +15,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:textColor="#000000"
             android:padding="16dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="일정 제목" />
+            android:text="할 일"
+            android:textColor="#000000"/>
         <EditText
             android:id="@+id/editTextTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="#000000"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="위치" />
+            android:text="위치"
+            android:textColor="#000000"/>
         <EditText
             android:id="@+id/editTextLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:hint="위치 선택" />
+            android:hint="위치 선택"
+            android:textColor="#000000"/>
 
         <Button
             android:id="@+id/btnFindAddress"
@@ -46,7 +52,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="시작 시간" />
+            android:text="시작 시간"
+            android:textColor="#000000"/>
 
         <TextView
             android:id="@+id/textViewStartTime"
@@ -56,7 +63,8 @@
             android:padding="8dp"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="시간 선택" />
+            android:text="시간 선택"
+            android:textColor="#000000"/>
 
         <TimePicker
             android:id="@+id/timePickerStart"
@@ -68,7 +76,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="종료 시간" />
+            android:text="종료 시간"
+            android:textColor="#000000"/>
 
         <TextView
             android:id="@+id/textViewEndTime"
@@ -78,7 +87,8 @@
             android:padding="8dp"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="시간 선택" />
+            android:text="시간 선택"
+            android:textColor="#000000"/>
 
         <TimePicker
             android:id="@+id/timePickerEnd"

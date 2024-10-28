@@ -1,82 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_marginTop="200dp"
-android:layout_marginRight="75dp"
-android:layout_marginLeft="75dp"
-android:orientation="vertical">
-
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@null"
-    android:src="@drawable/login_image"
-    android:layout_gravity="center">
-</ImageView>
-
-<EditText
-    android:id="@+id/user_id"
     android:layout_width="match_parent"
-    android:hint="ID"
-    android:layout_height="50dp">
-</EditText>
-
-<EditText
-    android:id="@+id/user_pw"
-    android:layout_width="match_parent"
-    android:inputType="textPassword"
-    android:hint="Password"
-    android:layout_height="50dp">
-</EditText>
-
-<Button
-    android:id="@+id/login_button"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:text="Login">
-</Button>
+    android:layout_height="match_parent"
+    android:background="#E8D6F3">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10">
+        android:layout_height="match_parent"
+        android:layout_marginTop="200dp"
+        android:layout_marginRight="75dp"
+        android:layout_marginLeft="75dp"
+        android:layout_marginBottom="100dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/signUp_button"
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@null"
+            android:src="@drawable/login_image"
+            android:layout_gravity="center" />
+
+        <EditText
+            android:id="@+id/user_id"
+            android:layout_width="match_parent"
+            android:hint="ID"
+            android:textColorHint="#D3D3D3"
+            android:textColor="#000000"
+            android:layout_height="50dp" />
+
+        <EditText
+            android:id="@+id/user_pw"
+            android:layout_width="match_parent"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:textColorHint="	#D3D3D3"
+            android:textColor="#000000"
+            android:layout_height="50dp" />
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Login" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <TextView
+                android:id="@+id/signUp_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:gravity="right"
+                android:textSize="12sp"
+                android:layout_margin="10dp"
+                android:text="Sign Up"
+                android:textColor="#000000"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:gravity="right"
-            android:textSize="12sp"
-            android:layout_margin="10dp"
-            android:text="Sign Up">
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="|">
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:textSize="12sp"
-            android:layout_margin="10dp"
-            android:text="Find password">
-        </TextView>
+            android:layout_gravity="center"
+            android:text="Back"
+            android:layout_marginTop="20dp"
+            android:onClick="onBackPressed" />
     </LinearLayout>
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Back"
-        android:layout_marginTop="20dp"
-        android:onClick="onBackPressed" />
 </LinearLayout>

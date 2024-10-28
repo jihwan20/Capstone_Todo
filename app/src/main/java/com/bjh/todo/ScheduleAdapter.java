@@ -1,5 +1,6 @@
 package com.bjh.todo;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +32,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ScheduleDTO schedule = scheduleList.get(position);
         holder.titleTextView.setText(schedule.getScheduleText() != null ? schedule.getScheduleText() : "제목 없음");
+        holder.titleTextView.setTextColor(Color.BLACK);
         holder.timeTextView.setText(schedule.getStartTime() + " - " + schedule.getEndTime());
+        holder.timeTextView.setTextColor(Color.BLACK);
         holder.locationTextView.setText(schedule.getLocation() != null ? schedule.getLocation() : "위치 없음");
+        holder.locationTextView.setTextColor(Color.BLACK);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
