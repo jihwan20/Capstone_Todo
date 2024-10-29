@@ -10,6 +10,10 @@ public class UserDTO {
         this.userPw = userPw;
     }
 
+    public UserDTO() {
+
+    }
+
     // Getter와 Setter
     public String getUserId() {
         return userId;

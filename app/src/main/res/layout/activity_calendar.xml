@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF"> <!-- 배경 색깔 흰색으로 설정 -->
+    android:background="#FFFFFF"
+    android:orientation="vertical"> <!-- 배경 색깔 흰색으로 설정 -->
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,24 +20,39 @@
             android:textColor="#FFF"
             android:textSize="20sp" />
 
-        <!-- 로그인/로그아웃 버튼 추가 -->
-        <Button
-            android:id="@+id/login_logout_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackground"
-            android:textColor="#FFF" />
+            android:orientation="horizontal">
+
+            <!-- 로그인/로그아웃 버튼 추가 -->
+            <Button
+                android:id="@+id/login_logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:textColor="#FFF" />
+
+            <!-- 회원 상세보기 버튼 추가 -->
+            <Button
+                android:id="@+id/view_member_details_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:background="?attr/selectableItemBackground"
+                android:text="내정보"
+                android:textColor="#FFF" />
+        </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:dateTextAppearance="@style/CalendarDateTextStyle"
-        android:weekDayTextAppearance="@style/CalendarWeekDayTextStyle"
-        android:layout_gravity="center"/>
+        android:weekDayTextAppearance="@style/CalendarWeekDayTextStyle" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -48,9 +63,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#F0F0F0"
+            android:gravity="start"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="start">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/extra_block_text"
@@ -70,9 +85,9 @@
             android:id="@+id/add_schedule"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
-            android:src="@android:drawable/ic_input_add"/>
+            android:src="@android:drawable/ic_input_add" />
     </RelativeLayout>
 </LinearLayout>

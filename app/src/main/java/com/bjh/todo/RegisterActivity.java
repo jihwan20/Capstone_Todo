@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -24,6 +27,17 @@ public class RegisterActivity extends AppCompatActivity {
         userPwInput = findViewById(R.id.userPw);
         register = findViewById(R.id.register);
         dbHelper = new UserDBHelper(this);
+
+        // 툴바 설정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // 뒤로가기 버튼 클릭 리스너 추가
+        ImageView backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> finish());
+
+        // 툴바 제목 없애기
+        getSupportActionBar().setTitle(""); // 빈 문자열로 제목 제거
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override

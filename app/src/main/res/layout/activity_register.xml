@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="#FFFFFF">
+
+    <include layout="@layout/toolbar_header" />
 
     <EditText
         android:id="@+id/userId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"/>
+        android:hint="ID"/>
 
     <EditText
         android:id="@+id/userPw"
@@ -22,7 +23,8 @@
 
     <Button
         android:id="@+id/register"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Register"/>
 </LinearLayout>

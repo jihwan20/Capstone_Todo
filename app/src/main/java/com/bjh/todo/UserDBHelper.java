@@ -87,4 +87,38 @@ public class UserDBHelper extends SQLiteOpenHelper {
         db.close();
         return exists;
     }
+
+    public UserDTO getUserById(String userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, null, COLUMN_USER_ID + "=?", new String[]{userId}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            UserDTO user = new UserDTO();
+            user.setUserId(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)));
+            user.setUserPw(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_PW)));
+            cursor.close();
+            db.close();
+            return user;
+        }
+        cursor.close();
+        db.close();
+        return null; // 사용자가 존재하지 않으면 null 반환
+    }
+
+    // 비밀번호 업데이트 메소드
+    public void updateUserPassword(UserDTO user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_PW, user.getUserPw()); // 새로운 비밀번호 설정
+
+        // ID에 해당하는 사용자 비밀번호 업데이트
+        db.update(TABLE_USERS, values, COLUMN_USER_ID + "=?", new String[]{user.getUserId()});
+        db.close(); // 데이터베이스 닫기
+    }
+
+    public void deleteUser(String userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_USERS, COLUMN_USER_ID + "=?", new String[]{userId});
+        db.close(); // 데이터베이스 닫기
+    }
 }

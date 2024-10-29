@@ -36,7 +36,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // 기본 위치를 서울로 설정
-        LatLng seoul = new LatLng(37.5665, 126.978);
+        LatLng seoul = new LatLng(36.622605, 127.48232666666667);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12));
 
         // 맵 클릭 리스너 추가
