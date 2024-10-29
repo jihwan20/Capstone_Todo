@@ -19,6 +19,11 @@ public class ScheduleDTO {
         this.location = location;
     }
 
+    // scheduleId만 받는 생성자 추가
+    public ScheduleDTO(int scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
     // Getter와 Setter
     public int getScheduleId() {
         return scheduleId;

@@ -25,7 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private CalendarView calendarView; // 달력 뷰
-    private Button settingsButton; // 설정 버튼
+    private Button loginLogoutButton; // 로그인/로그아웃 버튼
     private FloatingActionButton addTodo; // 일정 추가 버튼
     private LinearLayout extraBlock;
     private TextView extraBlockText; // 일정 정보를 표시할 TextView
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 뷰 초기화
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        settingsButton = findViewById(R.id.settings_button); // 설정 버튼 초기화
+        loginLogoutButton = findViewById(R.id.login_logout_button); // 로그인/로그아웃 버튼 초기화
         addTodo = findViewById(R.id.add_schedule);
         calendarView = findViewById(R.id.calendarView);
         extraBlock = findViewById(R.id.extra_block);
@@ -57,10 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 로그인 상태 확인
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-
-        if (!isLoggedIn) {
-            extraBlockText.setText("로그인 해주세요."); // 로그인 필요 메시지
-        }
+        updateLoginLogoutButton(); // 버튼 텍스트 업데이트
 
         // 오늘 날짜 가져오기
         Calendar calendar = Calendar.getInstance();
@@ -72,13 +69,6 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setDate(calendar.getTimeInMillis(), true, true);
         selectedDate = String.format("%04d-%02d-%02d", cYear, cMonth + 1, cDayOfMonth);
 
-        // 설정 버튼 클릭 리스너 추가
-        settingsButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            intent.putExtra("isLoggedIn", isLoggedIn); // 로그인 상태 전달
-            startActivity(intent);
-        });
-
         // 날짜 선택 리스너 설정
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
@@ -88,6 +78,22 @@ public class MainActivity extends AppCompatActivity {
             extraBlockText.setText(formattedSelectedDate);
 
             loadSchedulesForDate(selectedDate);
+        });
+
+        // 로그인/로그아웃 버튼 클릭 리스너 설정
+        loginLogoutButton.setOnClickListener(v -> {
+            if (!isLoggedIn) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivityForResult(intent, 1); // 로그인 후 결과를 받을 요청 코드
+            } else {
+                // 로그아웃 처리
+                isLoggedIn = false;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("isLoggedIn", false);
+                editor.apply();
+                updateLoginLogoutButton(); // 버튼 텍스트 업데이트
+                Toast.makeText(this, "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // 일정 추가 버튼 클릭 리스너 설정
@@ -184,11 +190,21 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("isLoggedIn", true);
             editor.putString("userId", data.getStringExtra("userId"));
             editor.apply();
+            updateLoginLogoutButton(); // 버튼 텍스트 업데이트
             extraBlockText.setText("로그인 후 날짜를 선택하세요.");
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             if (selectedDate != null) {
                 loadSchedulesForDate(selectedDate);
             }
+        }
+    }
+
+    // 로그인/로그아웃 버튼 텍스트 업데이트 메서드
+    private void updateLoginLogoutButton() {
+        if (isLoggedIn) {
+            loginLogoutButton.setText("로그아웃");
+        } else {
+            loginLogoutButton.setText("로그인");
         }
     }
 }
