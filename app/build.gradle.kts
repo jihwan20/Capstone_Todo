@@ -37,8 +37,8 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation("com.google.android.gms:play-services-location:19.0.1") // 위치 서비스 의존성 추가
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

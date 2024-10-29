@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ScheduleDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "todo_db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String TABLE_SCHEDULES = "schedules";
 
     // 일정 테이블 컬럼

@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 인터넷 권한 추가 -->
     <uses-permission android:name="android.permission.SET_ALARM"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -26,6 +27,16 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD97ppppHKGHtTDRt1Qz2UJ52-sFX5GgX8" />
+        <service
+            android:name=".LocationUpdatesService"
+            android:exported="false" /> <!-- 서비스는 다른 앱에서 접근할 수 없도록 설정 -->
+        <receiver
+            android:name=".LocationBroadcastReceiver"
+            android:exported="true"> <!-- 외부 앱이 접근할 수 있도록 설정 -->
+            <intent-filter>
+                <action android:name="LocationUpdate"/>
+            </intent-filter>
+        </receiver>
         <receiver android:name=".AlarmReceiver" />
         <activity android:name=".MapActivity"/>
         <activity android:name=".SettingsActivity"/>

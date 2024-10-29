@@ -3,8 +3,12 @@ package com.bjh.todo;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.Manifest;
 import android.widget.Button;
@@ -13,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -33,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences; // 사용자 설정 저장을 위한 SharedPreferences
     private boolean isLoggedIn; // 로그인 상태
 
+    // GPS 사용을 위한 멤버 변수 선언
+    LocationManager locationManager;
+    LocationListener locationListener;
+
     private String selectedDate; // 선택된 날짜
 
     @Override
@@ -40,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar); // 레이아웃 설정
 
+        // 권한 요청
+        requestLocationPermissions();
+
         // 알림 채널 생성
         NotificationHelper.createNotificationChannel(this);
-
-        // 권한 요청
-        requestNotificationPermission();
 
         // 뷰 초기화
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
@@ -54,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
         extraBlock = findViewById(R.id.extra_block);
         extraBlockText = findViewById(R.id.extra_block_text);
         scheduleDBHelper = new ScheduleDBHelper(this);
+
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+        // 위치 리스너 초기화
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                String message = String.format("위도: %f, 경도: %f", location.getLatitude(), location.getLongitude());
+                Log.i("MyLocation", message);
+            }
+        };
 
         // 로그인 상태 확인
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -123,11 +143,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 알림 권한 요청 메서드
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+    // 위치 권한 요청 메서드
+    private void requestLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+        } else {
+            startLocationUpdates(); // 권한이 이미 있다면 위치 업데이트 시작
+        }
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+
+            // 마지막 위치 가져오기
+            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastLocation != null) {
+                Log.i("MyLocation", "마지막 위도: " + lastLocation.getLatitude() + ", 경도: " + lastLocation.getLongitude());
+            } else {
+                Log.i("MyLocation", "마지막 위치 정보가 없습니다.");
             }
         }
     }
@@ -135,11 +169,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
+        if (requestCode == 100) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "알림 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show();
+                startLocationUpdates(); // 권한이 승인되면 위치 업데이트 시작
             } else {
-                Toast.makeText(this, "알림 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }
