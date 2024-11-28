@@ -1,17 +1,12 @@
 package com.bjh.todo;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,17 +20,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements  LocationListener {
 
     private CalendarView calendarView;
     private Button loginLogoutButton;
@@ -46,9 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private ScheduleDBHelper scheduleDBHelper;
     private SharedPreferences sharedPreferences;
     private boolean isLoggedIn;
-    private LocationManager locationManager;
+    private LocationService locationService;
     private LocationListener locationListener;
     private String selectedDate;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +51,15 @@ public class MainActivity extends AppCompatActivity {
 
         // 알림 채널 생성
         NotificationHelper.createNotificationChannel(this);
+
+        // LocationManager 초기화
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // 위치 권한 체크 후 위치 업데이트 요청
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 10, this); // MainActivity를 LocationListener로 등록
+        }
+
 
         // 권한 요청
         requestNotificationPermission();
@@ -71,38 +74,8 @@ public class MainActivity extends AppCompatActivity {
         scheduleDBHelper = new ScheduleDBHelper(this);
         viewMemberDetailsButton = findViewById(R.id.view_member_details_button);
 
-        // 실시간 위도 경도 log
-        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                Log.i("MyLocation", "위도: " + currentLocation.latitude + ", 경도: " + currentLocation.longitude);
-
-                // 오늘 등록된 일정의 위치 가져오기
-                List<ScheduleDTO> schedules = scheduleDBHelper.getSchedulesByDate(selectedDate, sharedPreferences.getString("userId", ""));
-                for (ScheduleDTO schedule : schedules) {
-                    // 스케줄에 있는 주소 지명을 위도 경도로 변경
-                    LatLng scheduleLocation = getLatLngFromAddress(schedule.getLocation());
-
-                    if (scheduleLocation != null) {
-                        // 일정 위치와 현 위치 사이에 거리 계싼
-                        float distance = calculateDistance(currentLocation, scheduleLocation);
-                        // 50m 이내면 알람 표시
-                        if (distance <= 50) {
-                            showLocationNotification(schedule);
-                        }
-                    }
-                }
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // 권한 요청
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+        // LocationService 인스턴스 초기화
+        locationService = new LocationService(this, new ScheduleDBHelper(this), sharedPreferences);
 
         // 로그인 상태 확인
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -182,59 +155,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 주소를 위도와 경도로 변환
-    private LatLng getLatLngFromAddress(String address) {
-        Geocoder geocoder = new Geocoder(this);
-        List<Address> addresses;
-        try {
-            addresses = geocoder.getFromLocationName(address, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                Address location = addresses.get(0);
-                return new LatLng(location.getLatitude(), location.getLongitude());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // 두 위치 간 거리 계산
-    private float calculateDistance(LatLng location1, LatLng location2) {
-        float[] results = new float[1]; // 결과를 저장할 배열 생성
-        // 두 위치 간의 거리 계산
-        Location.distanceBetween(
-                location1.latitude, location1.longitude, // 첫 번째 위치의 위도와 경도
-                location2.latitude, location2.longitude, // 두 번째 위치의 위도와 경도
-                results // 결과를 저장할 배열
-        );
-        return results[0]; // 계산된 거리 반환 (미터 단위)
-    }
-
-    // 위치 기반 알림 생성
-    private void showLocationNotification(ScheduleDTO schedule) {
-        // 알림을 표시하기 전에 로그를 출력합니다.
-        Log.i("Notification", "알림 표시: " + schedule.getScheduleText());
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                schedule.getScheduleId(),
-                notificationIntent,
-                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle("일정 알림")
-                .setContentText(schedule.getScheduleText() + " 장소에 도착했습니다.")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(schedule.getScheduleId(), builder.build());
+    // 위치 권한 요청 메소드
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
         }
     }
 
@@ -250,7 +174,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
+        if (requestCode == 100) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "위치 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "알림 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
@@ -268,6 +198,44 @@ public class MainActivity extends AppCompatActivity {
 
         if (selectedDate != null) {
             loadSchedulesForDate(selectedDate);
+        }
+
+        // 위치 업데이트 시작
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationService.startLocationUpdates(selectedDate);
+        } else {
+            Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        // 위치가 변경되었을 때 처리할 코드
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        Log.i("LocationUpdate", "위치 변경: " + currentLocation.latitude + ", " + currentLocation.longitude);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // 상태 변경 처리
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        // 위치 제공자가 활성화된 경우 처리
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        // 위치 제공자가 비활성화된 경우 처리
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // 위치 업데이트를 멈추기 위해 등록된 리스너를 해제합니다.
+        if (locationManager != null) {
+            locationManager.removeUpdates(this);  // MainActivity를 LocationListener로 등록했으므로 이를 해제합니다.
         }
     }
 
